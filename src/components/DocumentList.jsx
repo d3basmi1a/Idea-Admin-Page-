@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { collection, getDocs } from "firebase/firestore"; // Correct imports
-import { db } from "../firebase/firebaseConfiguration"; // Adjust the path if needed
+import { collection, getDocs } from "firebase/firestore"; 
+import { db } from "../firebase/firebaseConfiguration"; 
 
 const DocumentList = () => {
   const [ideas, setIdeas] = useState([]);
-  const [loading, setLoading] = useState(true); // Loading state
+  const [loading, setLoading] = useState(true); 
 
   useEffect(() => {
     const fetchData = async () => {
@@ -13,12 +13,12 @@ const DocumentList = () => {
         const ideasData = [];
 
         querySnapshot.forEach((doc) => {
-          const ideaDetails = doc.data().IdeaDetails; // Accessing IdeaDetails field
+          const ideaDetails = doc.data().IdeaDetails; 
 
           if (ideaDetails) {
-            // Assuming IdeaDetails is an object with key-value pairs
+            
             Object.entries(ideaDetails).forEach(([key, value]) => {
-              ideasData.push({ ...value, id: key }); // Add key as ID for unique identification
+              ideasData.push({ ...value, id: key }); 
             });
           }
         });
