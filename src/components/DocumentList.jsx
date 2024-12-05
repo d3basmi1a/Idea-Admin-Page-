@@ -1,35 +1,28 @@
 import React, { useState, useEffect } from "react";
-import { collection, getDocs } from "firebase/firestore"; 
+import { collection, Firestore, getDocs, query } from "firebase/firestore"; 
 import { db } from "../firebase/firebaseConfiguration"; 
 
 const DocumentList = () => {
   const [ideas, setIdeas] = useState([]);
-  const [loading, setLoading] = useState(true); 
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const querySnapshot = await getDocs(collection(db, "Ideas"));
-        const ideasData = [];
+        const ref = collection(db,"Ideas")
+        const q = query(ref)
 
-        querySnapshot.forEach((doc) => {
-          const ideaDetails = doc.data().IdeaDetails; 
+        const querySnap = await getDocs(q)
+        console.log(querySnap)
 
-          if (ideaDetails) {
-            
-            Object.entries(ideaDetails).forEach(([key, value]) => {
-              ideasData.push({ ...value, id: key }); 
-            });
-          }
-        });
-
-        setIdeas(ideasData);
-        setLoading(false); // Data fetched, stop loading
-      } catch (error) {
-        console.error("Error fetching data: ", error);
-        setLoading(false);
+        querySnap.forEach((doc)=>{
+          console.log(doc)
+        })
       }
-    };
+      catch (error) {
+        console.error("Error fetching ideas:", error);
+      }
+    }
 
     fetchData();
   }, []);
@@ -47,6 +40,7 @@ const DocumentList = () => {
         <table>
           <thead>
             <tr>
+              <th>User Email</th>
               <th>Team Name</th>
               <th>Category</th>
               <th>Description</th>
@@ -59,6 +53,7 @@ const DocumentList = () => {
           <tbody>
             {ideas.map((idea) => (
               <tr key={idea.id}>
+                <td>{idea.userEmail || "N/A"}</td>
                 <td>{idea.teamName || "N/A"}</td>
                 <td>{idea.categoryChecked || "N/A"}</td>
                 <td>{idea.ideaDescription || "N/A"}</td>
