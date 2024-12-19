@@ -1,28 +1,58 @@
+
 import React, { useState, useEffect } from "react";
-import { collection, Firestore, getDocs, query } from "firebase/firestore"; 
-import { db } from "../firebase/firebaseConfiguration"; 
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "../firebase/firebaseConfiguration";
 
 const DocumentList = () => {
-  const [ideas, setIdeas] = useState([]);
+  const [ideas, setIdeas] = useState([]); 
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const ref = collection(db,"Ideas")
-        const q = query(ref)
+        const mainCollection = collection(db, "Ideas");
+        const mainDocs = await getDocs(mainCollection);
 
-        const querySnap = await getDocs(q)
-        console.log(querySnap)
+        if (mainDocs.empty) {
+          console.log("No documents found in the Ideas collection.");
+          return;
+        }
 
-        querySnap.forEach((doc)=>{
-          console.log(doc)
-        })
-      }
-      catch (error) {
+        console.log("Found documents in Ideas collection:");
+        const allIdeas = [];
+
+        
+        for (const emailDoc of mainDocs.docs) {
+          console.log(`Processing Document ID: ${emailDoc.id}`);
+          console.log("Document Data:", emailDoc.data());
+
+          const ideaDetailsCollection = collection(emailDoc.ref, "IdeaDetais"); 
+          const ideaDetailsSnap = await getDocs(ideaDetailsCollection);
+
+          if (ideaDetailsSnap.empty) {
+            console.log(`No documents in IdeaDetails subcollection for ${emailDoc.id}`);
+          } else {
+            
+            ideaDetailsSnap.forEach((ideaDoc) => {
+              console.log(`Subcollection Document ID: ${ideaDoc.id}`);
+              console.log("Subcollection Document Data:", ideaDoc.data());
+
+              allIdeas.push({
+                parentEmail: emailDoc.id, 
+                ideaDocId: ideaDoc.id,
+                ...ideaDoc.data(), 
+              });
+            });
+          }
+        }
+
+        setIdeas(allIdeas); 
+      } catch (error) {
         console.error("Error fetching ideas:", error);
+      } finally {
+        setLoading(false);
       }
-    }
+    };
 
     fetchData();
   }, []);
@@ -40,6 +70,8 @@ const DocumentList = () => {
         <table>
           <thead>
             <tr>
+              <th>Parent Email</th>
+              <th>Idea Document ID</th>
               <th>User Email</th>
               <th>Team Name</th>
               <th>Category</th>
@@ -52,7 +84,9 @@ const DocumentList = () => {
           </thead>
           <tbody>
             {ideas.map((idea) => (
-              <tr key={idea.id}>
+              <tr key={idea.ideaDocId}>
+                <td>{idea.parentEmail}</td>
+                <td>{idea.ideaDocId}</td>
                 <td>{idea.userEmail || "N/A"}</td>
                 <td>{idea.teamName || "N/A"}</td>
                 <td>{idea.categoryChecked || "N/A"}</td>
@@ -71,3 +105,6 @@ const DocumentList = () => {
 };
 
 export default DocumentList;
+
+
+
