@@ -1,9 +1,11 @@
 import React, { useEffect } from "react";
-import { addDoc, collection } from "firebase/firestore"; // Import Firestore functions
+import { addDoc, collection } from "firebase/firestore"; 
 import { db } from "../firebase/firebaseConfiguration";
 
 function IdeaSubmission() {
   async function handle() {
+    
+    // hard coding the values for fields for the idea submussion 
     const userName = "ankit03";
     const currentUserEmail = "meraMan@gmail.com";
     const teamName = "ghatityaInsaan";
