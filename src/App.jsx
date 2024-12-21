@@ -1,5 +1,6 @@
 
 import DocumentList from "./components/DocumentList";
+import IdeaSubmission from "./components/IdeaSubmission";
 
 const App = () => {
   return (
