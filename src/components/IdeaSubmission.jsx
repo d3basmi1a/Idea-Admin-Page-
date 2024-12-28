@@ -1,11 +1,11 @@
+// IdeaSubmission.jsx
 import React, { useEffect } from "react";
-import { addDoc, collection } from "firebase/firestore"; 
+import { addDoc, collection } from "firebase/firestore";
 import { db } from "../firebase/firebaseConfiguration";
+import "./styles.css";
 
 function IdeaSubmission() {
   async function handle() {
-    
-    // hard coding the values for fields for the idea submussion 
     const userName = "ankit03";
     const currentUserEmail = "meraMan@gmail.com";
     const teamName = "ghatityaInsaan";
@@ -17,13 +17,11 @@ function IdeaSubmission() {
     const college = "tmsl";
 
     try {
-      // Collection reference
       const userCollectionRef = collection(
         db,
         `Ideas/${userName.trim()} - ${currentUserEmail}/IdeaDetais`
       );
 
-      // Add document to Firestore
       const docRef = await addDoc(userCollectionRef, {
         userName,
         currentUserEmail,
@@ -38,25 +36,23 @@ function IdeaSubmission() {
       });
 
       const userRef = collection(db, "users");
-
-      // Add document to Firestore
-      const useRef = await addDoc(userRef, {
-        userName: userName, // Field for username
-        userEmail: currentUserEmail, // Field for user email
+      await addDoc(userRef, {
+        userName: userName,
+        userEmail: currentUserEmail,
       });
 
-      console.log("Document written with ID: ", docRef.id,useRef.id);
+      console.log("Document written with ID: ", docRef.id);
     } catch (error) {
       console.error("Error adding document: ", error);
     }
   }
 
   useEffect(() => {
-    handle(); // Call the handle function
+    handle();
   }, []);
 
   return (
-    <div>
+    <div className="idea-submission">
       <h1>Idea Submission</h1>
     </div>
   );
